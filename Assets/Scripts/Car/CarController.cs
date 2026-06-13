@@ -1,12 +1,18 @@
 using UnityEngine;
 using System.Collections.Generic;
 using UnityEngine.InputSystem;
+using Unity.VisualScripting.Dependencies.NCalc;
 
 public class CarController : MonoBehaviour
 {
     [Header("Car Speed")]
-    [SerializeField] private float maxAcceleration = 30.0f;
-    [SerializeField] private float brakeAcceleration = 50.0f;
+    [SerializeField] private float acceleration;
+    [SerializeField] private float brakeForce;
+
+    [Header("Car Turning")]
+    [SerializeField] private float turnSensitivity;
+    [SerializeField] private float maxSteerAngle;
+    [SerializeField] private Vector3 centerOfMass;
 
     [Header("Wheels")]
     public List<Wheel> wheels;
@@ -28,6 +34,8 @@ public class CarController : MonoBehaviour
     {
         carRb = GetComponent<Rigidbody>();
 
+        carRb.centerOfMass = centerOfMass;
+
         gameplayActions = playerInputAction.FindActionMap("Gameplay", true);
 
         movementAction = gameplayActions.FindAction("Move", true);
@@ -36,15 +44,28 @@ public class CarController : MonoBehaviour
     private void LateUpdate()
     {
         Move();
+        Steer();
     }
 
     void Move()
     {
         foreach (var wheel in wheels)
         {
-            wheel.wheelCollider.motorTorque = movementAction.ReadValue<Vector2>().y * maxAcceleration * Time.deltaTime;     
+            wheel.wheelCollider.motorTorque = movementAction.ReadValue<Vector2>().y * acceleration;     
         }
     }
 
+    void Steer()
+    {
+        foreach (var wheel in wheels)
+        {
+            if (wheel.axel == Axel.Front)
+            {
+                var steerAngle = movementAction.ReadValue<Vector2>().x * maxSteerAngle * turnSensitivity;
+                wheel.wheelCollider.steerAngle = Mathf.Lerp(wheel.wheelCollider.steerAngle, steerAngle, 0.6f);
+            }
+        }
+    }
 
+    
 }
