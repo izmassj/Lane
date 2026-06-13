@@ -23,6 +23,8 @@ public class CarController : MonoBehaviour
     // Inputs
 
     private InputAction movementAction;
+    private InputAction brakeAction;
+    private InputAction lookAction;
 
     private InputActionMap gameplayActions;
 
@@ -39,12 +41,17 @@ public class CarController : MonoBehaviour
         gameplayActions = playerInputAction.FindActionMap("Gameplay", true);
 
         movementAction = gameplayActions.FindAction("Move", true);
+
+        brakeAction = gameplayActions.FindAction("Brake", true);
+
+        lookAction = gameplayActions.FindAction("Look", true);
     }
 
     private void LateUpdate()
     {
         Move();
         Steer();
+        Brake();
     }
 
     void Move()
@@ -67,5 +74,21 @@ public class CarController : MonoBehaviour
         }
     }
 
-    
+    void Brake()
+    {
+        if (brakeAction.ReadValue<float>() > 0.0f)
+        {
+            foreach (var wheel in wheels)
+            {
+                wheel.wheelCollider.brakeTorque = 300 * brakeForce * Time.deltaTime;
+            }
+        }
+        else
+        {
+            foreach (var wheel in wheels)
+            {
+                wheel.wheelCollider.brakeTorque = 0;
+            }
+        }
+    }
 }
