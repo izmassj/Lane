@@ -82,10 +82,51 @@ public class ShowRoad3DModelEditor : Editor
 
         DrawCardinalPoints(r);
 
+        Draw3DText("TEST", new Vector3(0, 0,0), 0.1f, Color.green);
+
         Texture result = previewUtility.EndPreview();
         GUI.DrawTexture(r, result, ScaleMode.ScaleToFit, false);
     }
 
+    private GameObject CreatePreviewText(string text, Color color)
+    {
+        GameObject textObject = new GameObject("Preview Text " + text);
+        textObject.hideFlags = HideFlags.HideAndDontSave;
+
+        TextMesh textMesh = textObject.AddComponent<TextMesh>();
+
+        textMesh.text = text;
+        textMesh.anchor = TextAnchor.MiddleCenter;
+        textMesh.alignment = TextAlignment.Center;
+        textMesh.fontSize = 64;
+        textMesh.characterSize = 0.1f;
+        textMesh.color = color;
+
+        MeshRenderer renderer = textObject.GetComponent<MeshRenderer>();
+
+        if (textMesh.font != null)
+        {
+            renderer.sharedMaterial = textMesh.font.material;
+        }
+
+        previewUtility.AddSingleGO(textObject);
+
+        return textObject;
+    }
+
+    private void Draw3DText(string text, Vector3 position, float characterSize, Color color)
+    {
+        GameObject textObject = CreatePreviewText(text, color);
+
+        TextMesh textMesh = textObject.GetComponent<TextMesh>();
+        textMesh.characterSize = characterSize;
+
+        textObject.transform.position = position;
+
+        // Same orientation as the top-down camera.
+        // This makes the text lie flat in XZ space and face the camera.
+        textObject.transform.rotation = Quaternion.Euler(90f, 0f, 0f);
+    }
 
     private void DrawCardinalPoints(Rect previewRect)
     {
