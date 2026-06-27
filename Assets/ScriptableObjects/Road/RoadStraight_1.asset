@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::RoadTile
   meshRotation: 0
   prefab: {fileID: 1888775185771279847, guid: e14067d9fdad3944e9b0198c71864247, type: 3}
-  north: 1
-  south: 1
-  east: 0
-  west: 0
+  _north: 1
+  _south: 1
+  _east: 0
+  _west: 0

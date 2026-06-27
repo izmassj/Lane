@@ -10,11 +10,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0dc244f26d9118547bf7e97df34e2188, type: 3}
-  m_Name: RoadCrossroad_4
+  m_Name: RoadEnd_1
   m_EditorClassIdentifier: Assembly-CSharp::RoadTile
-  meshRotation: 3
-  prefab: {fileID: 1116220847951342753, guid: 6e4093ccba771e845aca725d63626ab3, type: 3}
-  _north: 0
-  _south: 0
-  _east: 0
+  meshRotation: 0
+  prefab: {fileID: 5534975621792026281, guid: 21dd90f1c652f4849be77835b16902ae, type: 3}
+  _north: 1
+  _south: 1
+  _east: 1
   _west: 0

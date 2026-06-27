@@ -1,14 +1,23 @@
+﻿using System.Collections.Generic;
+using System;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.Experimental.AI;
 
 [CustomEditor(typeof(RoadTile))]
 [CanEditMultipleObjects]
 public class ShowRoad3DModelEditor : Editor
 {
     private PreviewRenderUtility previewUtility;
+
     private GameObject previewInstance;
     private GameObject currentPrefab;
+
     private Material previewMaterial;
+
+    private Dictionary<RoadTileDirection, GameObject> previewTexts = new Dictionary<RoadTileDirection, GameObject>();
+
+    private Dictionary<RoadTileDirection, bool> directionsCompatible = new Dictionary<RoadTileDirection, bool>();
 
     private void OnEnable()
     {
@@ -22,6 +31,12 @@ public class ShowRoad3DModelEditor : Editor
         previewUtility.lights[1].intensity = 1.4f;
 
         RoadTile roadTile = (RoadTile)target;
+
+        foreach (RoadTileDirection rtd in Enum.GetValues(typeof(RoadTileDirection)))
+        {
+            directionsCompatible.Add(rtd, false);
+            Draw3DText(directionsCompatible[rtd] ? "✓" : "✗", new Vector3(0, 0, 0), 0.1f, directionsCompatible[rtd] ? Color.green : Color.red, rtd);
+        }
     }
 
     public override bool HasPreviewGUI()
@@ -59,7 +74,7 @@ public class ShowRoad3DModelEditor : Editor
 
         Camera cam = previewUtility.camera;
 
-        cam.transform.position = center + new Vector3(0f, size * 2f, 0);
+        cam.transform.position = center + new Vector3(0f, size * 3f, 0);
         cam.transform.LookAt(new Vector3(0, center.y, 0));
 
         cam.nearClipPlane = 0.01f;
@@ -78,17 +93,40 @@ public class ShowRoad3DModelEditor : Editor
 
         previewUtility.BeginPreview(safeRenderRect, background);
 
+        UpdateDirectionCompatibility(roadTile);
+
+        DrawTicksCrossesText(bounds);
+
+
         previewUtility.Render(true, true);
 
         DrawCardinalPoints(r);
-
-        Draw3DText("TEST", new Vector3(0, 0,0), 0.1f, Color.green);
 
         Texture result = previewUtility.EndPreview();
         GUI.DrawTexture(r, result, ScaleMode.ScaleToFit, false);
     }
 
-    private GameObject CreatePreviewText(string text, Color color)
+    private void DrawTicksCrossesText(Bounds bounds)
+    {
+        RoadTile roadTile = (RoadTile)target;
+
+        foreach (RoadTileDirection rtd in Enum.GetValues(typeof(RoadTileDirection)))
+        {
+            if (rtd == RoadTileDirection.North || rtd == RoadTileDirection.South)
+            {
+                previewTexts[rtd].transform.position = new Vector3(0, 0, (bounds.size.z / 1.5f) * (rtd == RoadTileDirection.South ? -1 : 1));
+            }
+            else
+            {
+                previewTexts[rtd].transform.position = new Vector3((bounds.size.x / 1.5f) * (rtd == RoadTileDirection.West ? -1 : 1), 0, 0);
+            }
+
+            previewTexts[rtd].GetComponent<TextMesh>().text = directionsCompatible[rtd] ? "✓" : "✗";
+            previewTexts[rtd].GetComponent<TextMesh>().color = directionsCompatible[rtd] ? Color.green : Color.red;
+        }
+    }
+
+    private GameObject CreatePreviewText(string text, Color color, RoadTileDirection direction)
     {
         GameObject textObject = new GameObject("Preview Text " + text);
         textObject.hideFlags = HideFlags.HideAndDontSave;
@@ -110,13 +148,28 @@ public class ShowRoad3DModelEditor : Editor
         }
 
         previewUtility.AddSingleGO(textObject);
+        previewTexts.Add(direction, textObject);
 
         return textObject;
     }
 
-    private void Draw3DText(string text, Vector3 position, float characterSize, Color color)
+    private void ClearPreviewTexts()
     {
-        GameObject textObject = CreatePreviewText(text, color);
+        foreach (KeyValuePair<RoadTileDirection, GameObject> previewText in previewTexts)
+        {
+            if (previewText.Value != null)
+            {
+                DestroyImmediate(previewText.Value);
+            }
+        }
+
+        directionsCompatible.Clear();
+        previewTexts.Clear();
+    }
+
+    private GameObject Draw3DText(string text, Vector3 position, float characterSize, Color color, RoadTileDirection direction)
+    {
+        GameObject textObject = CreatePreviewText(text, color, direction);
 
         TextMesh textMesh = textObject.GetComponent<TextMesh>();
         textMesh.characterSize = characterSize;
@@ -126,6 +179,17 @@ public class ShowRoad3DModelEditor : Editor
         // Same orientation as the top-down camera.
         // This makes the text lie flat in XZ space and face the camera.
         textObject.transform.rotation = Quaternion.Euler(90f, 0f, 0f);
+
+        return textObject;
+    }
+
+    private void UpdateDirectionCompatibility(RoadTile roadTile)
+    {
+        foreach (RoadTileDirection rtd in Enum.GetValues(typeof(RoadTileDirection)))
+        {
+            directionsCompatible[rtd] =
+                roadTile.GetDirection(rtd).Second == RoadTileConnectionType.Connectable;
+        }
     }
 
     private void DrawCardinalPoints(Rect previewRect)
@@ -231,6 +295,8 @@ public class ShowRoad3DModelEditor : Editor
 
     private void OnDisable()
     {
+        ClearPreviewTexts();
+
         if (previewInstance != null)
         {
             DestroyImmediate(previewInstance);

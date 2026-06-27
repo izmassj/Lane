@@ -650,10 +650,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: RoadIntersectionLine
       objectReference: {fileID: 0}
-    - target: {fileID: 29876367439498259, guid: 6a156546999ee294aa3e721d213f54d5, type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 1056600380987915224, guid: 6a156546999ee294aa3e721d213f54d5, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -813,10 +809,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: RoadCrossroad
       objectReference: {fileID: 0}
-    - target: {fileID: 1116220847951342753, guid: 6e4093ccba771e845aca725d63626ab3, type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -911,10 +903,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: RoadEnd
       objectReference: {fileID: 0}
-    - target: {fileID: 5534975621792026281, guid: 21dd90f1c652f4849be77835b16902ae, type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 8686339853361065495, guid: 21dd90f1c652f4849be77835b16902ae, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -971,10 +959,6 @@ PrefabInstance:
     - target: {fileID: 1888775185771279847, guid: e14067d9fdad3944e9b0198c71864247, type: 3}
       propertyPath: m_Name
       value: RoadStraight
-      objectReference: {fileID: 0}
-    - target: {fileID: 1888775185771279847, guid: e14067d9fdad3944e9b0198c71864247, type: 3}
-      propertyPath: m_IsActive
-      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5705393244553137922, guid: e14067d9fdad3944e9b0198c71864247, type: 3}
       propertyPath: m_LocalPosition.x
